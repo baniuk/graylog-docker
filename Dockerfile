@@ -53,7 +53,7 @@ RUN \
 #
 # final layer
 # use the smallest debain with headless openjdk and copying files from download layers
-FROM openjdk:8-jre-slim
+FROM arm64v8/openjdk:8-jre-slim
 
 ARG VCS_REF
 ARG GRAYLOG_VERSION
@@ -71,7 +71,7 @@ WORKDIR ${GRAYLOG_HOME}
 
 # hadolint ignore=DL3027,DL3008
 RUN \
-  echo "export JAVA_HOME=/usr/local/openjdk-8"     > /etc/profile.d/graylog.sh && \
+  echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64"     > /etc/profile.d/graylog.sh && \
   echo "export BUILD_DATE=${BUILD_DATE}"           >> /etc/profile.d/graylog.sh && \
   echo "export GRAYLOG_VERSION=${GRAYLOG_VERSION}" >> /etc/profile.d/graylog.sh && \
   echo "export GRAYLOG_SERVER_JAVA_OPTS='-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:NewRatio=1 -XX:MaxMetaspaceSize=256m -server -XX:+ResizeTLAB -XX:+UseConcMarkSweepGC -XX:+CMSConcurrentMTEnabled -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC -XX:-OmitStackTraceInFastThrow'" >> /etc/profile.d/graylog.sh && \
@@ -84,12 +84,12 @@ RUN \
   apt-get update  > /dev/null && \
   apt-get install --no-install-recommends --assume-yes \
     curl \
-    tini \
     libcap2-bin \
     libglib2.0-0 \
     libx11-6 \
     libnss3 \
     fontconfig > /dev/null && \
+  curl http://ftp.uk.debian.org/debian/pool/main/t/tini/tini_0.18.0-1_arm64.deb -o /tmp/tini.deb && dpkg -i /tmp/tini.deb && \
   addgroup \
     --gid "${GRAYLOG_GID}" \
     --quiet \
